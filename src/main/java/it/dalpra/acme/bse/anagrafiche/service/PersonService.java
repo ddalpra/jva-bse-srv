@@ -7,6 +7,7 @@ import it.dalpra.acme.bse.anagrafiche.dao.PersonDao;
 import it.dalpra.acme.bse.anagrafiche.entity.Person;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import io.micrometer.core.annotation.Counted;
 import io.micrometer.core.annotation.Timed;
 
@@ -60,5 +61,26 @@ public class PersonService {
     public int age(Person person) {     // must be public in order to be counted!
         return (LocalDate.now().getYear() - person.birthDate.getYear());
     }
+
+
+
+    @Transactional
+public Person createPerson(Person person) {
+    person.persist(); // Se usi PanacheEntity
+    return person;
+}
+
+@Transactional
+public Person updatePerson(Long id, Person details) {
+    Person entity = Person.findById(id);
+    if (entity == null) {
+        return null;
+    }
+    // Aggiorna i campi (adatta i nomi dei campi a quelli della tua classe Person)
+    entity.name = details.name;
+    entity.privateName = details.privateName;
+    entity.birthDate = details.birthDate; 
+    return entity;
+}
 
 }
